@@ -1,13 +1,23 @@
-import Vue from 'vue'
-import { createPinia, PiniaVuePlugin } from 'pinia'
+import Vue from "vue";
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import { createPinia, PiniaVuePlugin } from "pinia";
+import axios from 'axios';
 
-import App from './App.vue'
+import App from "./App.vue";
 
-import './assets/main.css'
+// Import Bootstrap and BootstrapVue CSS files
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-Vue.use(PiniaVuePlugin)
+// Make BootstrapVue available throughout your project
+Vue.use(BootstrapVue)
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin)
+
+Vue.use(PiniaVuePlugin);
+Vue.prototype.$http = axios;
 
 new Vue({
-  pinia: createPinia(),
-  render: (h) => h(App)
-}).$mount('#app')
+    pinia: createPinia(),
+    render: (h) => h(App),
+}).$mount("#app");
