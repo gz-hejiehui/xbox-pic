@@ -56,32 +56,42 @@
 
         <!--主体-->
         <main>
-            <b-jumbotron class="text-center">
+            <b-jumbotron class="text-center mb-0">
                 <b-container>
                     <h1 class="display-4">XboxPic</h1>
                     <p class="lead">
-                        Discover the latest Xbox game images on XboxPic.
-                        Browse through a collection of screenshots and get a
-                        glimpse of your favorite Xbox games in one place.
+                        Discover the latest Xbox game images on XboxPic. Browse
+                        through a collection of screenshots and get a glimpse of
+                        your favorite Xbox games in one place.
                     </p>
                     <b-row class="justify-content-center">
                         <form
                             class="form-inline my-2 my-lg-0"
                             @submit.prevent="searchGames"
                         >
-                            <input
-                                class="form-control mr-sm-2 search-input"
-                                type="search"
-                                placeholder="Search Game"
-                                aria-label="Search"
-                                v-model="searchTerm"
-                            />
-                            <button
-                                class="btn btn-outline-success my-2 my-sm-0"
-                                type="submit"
-                            >
-                                Search
-                            </button>
+                            <b-input-group>
+                                <b-form-input
+                                    ref="searchInput"
+                                    type="search"
+                                    placeholder="Search Game"
+                                    aria-label="Search"
+                                    v-model="searchTerm"
+                                    @blur="validateSearch"
+                                ></b-form-input>
+                                <b-input-group-append>
+                                    <button
+                                        :disabled="loading"
+                                        class="btn btn-outline-success my-2 my-sm-0"
+                                        type="submit"
+                                    >
+                                        <span v-if="!loading">Search</span>
+                                        <span
+                                            v-else
+                                            class="spinner-border spinner-border-sm"
+                                        ></span>
+                                    </button>
+                                </b-input-group-append>
+                            </b-input-group>
                         </form>
                     </b-row>
                 </b-container>
@@ -89,6 +99,8 @@
 
             <div class="album py-5 bg-light">
                 <div class="container">
+                    <h2>{{ gameTitle }}</h2>
+                    <hr />
                     <div class="row">
                         <div class="col-md-4">
                             <div class="card mb-4 shadow-sm">
@@ -617,40 +629,96 @@
                     <a href="#">Back to top</a>
                 </p>
                 <p>
-                    Discover the latest Xbox game images on XboxPic - your ultimate source for Xbox game screenshots
+                    Discover the latest Xbox game images on XboxPic - your
+                    ultimate source for Xbox game screenshots
                 </p>
                 <p>
-                    <p>Copyright &copy; {{ currentYear }} XboxPic. All rights reserved.</p>
+                    Copyright &copy; {{ currentYear }} XboxPic. All rights
+                    reserved.
                 </p>
             </div>
         </footer>
+
+        <!--提示信息-->
+        <b-modal id="modal-message" title="Message" centered ok-only>
+            <p class="my-2">{{ message }}</p>
+        </b-modal>
     </div>
 </template>
 
 <script>
+const apiUrl = "https://displaycatalog.mp.microsoft.com/v7.0/products";
+
 export default {
     data() {
         return {
+            loading: false,
             searchTerm: "",
+            message: "",
+            game: {
+                title: "",
+            },
         };
     },
     computed: {
         currentYear() {
             return new Date().getFullYear();
         },
+        gameTitle() {
+            return this.game.title === "" ? "None" : this.game.title;
+        },
     },
     methods: {
-        searchGames() {
-            if (this.searchTerm) {
-                console.log(this.searchTerm);
+        validateSearch() {
+            const verified = this.searchTerm.trim().length !== 0;
+            // if (verified) {
+            //     this.$refs.searchInput.classList.remove("is-invalid");
+            // } else {
+            //     this.$refs.searchInput.classList.add("is-invalid");
+            // }
+
+            return verified;
+        },
+        showMesage(message) {
+            if (message) {
+                this.message = message;
+                this.$bvModal.show("modal-message");
+            }
+        },
+        async searchGames() {
+            if (this.validateSearch()) {
+                try {
+                    this.loading = true;
+
+                    const params = {
+                        bigIds: this.searchTerm.trim(),
+                        market: "US",
+                        languages: "en-US",
+                        "MS-CV": "DGU1mcuYo0WMMp+F.1",
+                    };
+                    const response = await this.$http.get(apiUrl, { params });
+                    if (response.data.Products.length > 0) {
+                        const productTitle =
+                            response.data.Products[0]["LocalizedProperties"][0][
+                                "ProductTitle"
+                            ];
+                        this.game.title = productTitle;
+                        console.log(response.data.Products);
+                    } else {
+                        this.showMesage("Sorry, no products found.");
+                    }
+                } catch (e) {
+                    this.showMesage(
+                        "There was an error while searching, please try again later."
+                    );
+                    console.error(e);
+                } finally {
+                    this.loading = false;
+                }
+            } else {
+                this.showMesage("Search input is required.");
             }
         },
     },
 };
 </script>
-
-<style scoped>
-.search-input {
-    width: 280px !important;
-}
-</style>

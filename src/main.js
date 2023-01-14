@@ -1,6 +1,7 @@
 import Vue from "vue";
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import { createPinia, PiniaVuePlugin } from "pinia";
+import axios from 'axios';
 
 import App from "./App.vue";
 
@@ -14,6 +15,7 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 
 Vue.use(PiniaVuePlugin);
+Vue.prototype.$http = axios;
 
 new Vue({
     pinia: createPinia(),
