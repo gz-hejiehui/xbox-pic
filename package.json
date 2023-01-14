@@ -8,8 +8,12 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "bootstrap": "^4.6.2",
+    "bootstrap-vue": "^2.23.1",
+    "jquery": "^3.6.3",
     "pinia": "^2.0.16",
-    "vue": "^2.7.7"
+    "popper.js": "^1.16.1",
+    "vue": "^2.7.14"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
