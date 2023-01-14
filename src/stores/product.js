@@ -13,19 +13,33 @@ export const useProductStore = defineStore("product", {
         products: (state) =>
             state.data.map((item) => {
                 const info = item["LocalizedProperties"][0];
-                const images = info["Images"];
+
+                let imagesFilted = function (purpose) {
+                    return info["Images"]
+                        .filter((img) => img["ImagePurpose"] === purpose)
+                        .map((img) => {
+                            return {
+                                url: "https:" + img["Uri"],
+                                width: img["Width"],
+                                height: img["Height"],
+                                alt:
+                                    item["ProductId"] +
+                                    "_" +
+                                    img["ImagePurpose"] +
+                                    "_" +
+                                    img["FileId"],
+                            };
+                        });
+                };
+
                 return {
                     id: item["ProductId"],
                     name: info["ProductTitle"],
                     developer: info["DeveloperName"],
                     publisher: info["PublisherName"],
                     images: {
-                        poster: images.filter(
-                            (img) => img["ImagePurpose"] === "Poster"
-                        ),
-                        screenshots: images.filter(
-                            (img) => img["ImagePurpose"] === "Screenshot"
-                        ),
+                        poster: imagesFilted("Poster"),
+                        screenshots: imagesFilted("Screenshot"),
                     },
                 };
             }),
