@@ -10,10 +10,6 @@ jobs:
               uses: actions/checkout@v2
             - name: Get version number
               run: echo ${GITHUB_REF#refs/tags/} > version.txt
-            - name: Tag git commit
-              run: git tag ${GITHUB_REF#refs/tags/}
-              env:
-                  GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
             - name: Build and Push Docker Image
               env:
                   DOCKER_REGISTRY: docker.io
