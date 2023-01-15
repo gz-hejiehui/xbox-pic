@@ -1,0 +1,23 @@
+name: Release and Tag Docker Image
+on:
+    release:
+        types: [created]
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+            - name: Get version number
+              run: echo ${GITHUB_REF#refs/tags/} > version.txt
+            - name: Build and Push Docker Image
+              env:
+                  DOCKER_REGISTRY: docker.io
+                  DOCKER_REPOSITORY: jiehui/xbox-pic
+                  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+                  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+              run: |
+                  echo ${DOCKER_PASSWORD} | docker login ${DOCKER_REGISTRY} -u ${DOCKER_USERNAME} --password-stdin
+                  version=`cat version.txt`
+                  docker build -t ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${version} .
+                  docker push ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:${version}
