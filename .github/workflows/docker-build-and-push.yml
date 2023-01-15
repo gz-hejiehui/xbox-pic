@@ -1,0 +1,21 @@
+name: Build and Push Docker Image
+on:
+    push:
+        branches:
+            - chore/dockerize
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+            - name: Build and Push Docker Image
+              env:
+                  DOCKER_REGISTRY: docker.io
+                  DOCKER_REPOSITORY: jiehui/xbox-pic
+                  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+                  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+              run: |
+                  echo ${DOCKER_PASSWORD} | docker login ${DOCKER_REGISTRY} -u ${DOCKER_USERNAME} --password-stdin
+                  docker build -t ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:latest .
+                  docker push ${DOCKER_REGISTRY}/${DOCKER_REPOSITORY}:latest
