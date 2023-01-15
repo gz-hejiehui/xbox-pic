@@ -1,35 +1,65 @@
-# xboxpic
+# XboxPic
 
-This template should help get you started developing with Vue 3 in Vite.
+[![Build Status](https://github.com/gz-hejiehui/xbox-pic/actions/workflows/docker-build-and-push.yml/badge.svg)](https://github.com/gz-hejiehui/xbox-pic/actions)
 
-## Recommended IDE Setup
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/gz-hejiehui/xbox-pic/blob/main/LICENSE)
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Introduction
 
-## Customize configuration
+A tool for searching and downloading game images from Xbox official website.
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## Installation
 
-## Project Setup
+To install and run the project using Docker, you will need to have Docker installed on your machine.
 
-```sh
-npm install
+1. Pull the Docker image from Docker Hub:
+
+```bash
+docker pull jiehui/xbox-pic
 ```
 
-### Compile and Hot-Reload for Development
+2. Run the Docker container:
 
-```sh
-npm run dev
+```bash
+docker run -p 8080:80 -it jiehui/xbox-pic
 ```
 
-### Compile and Minify for Production
+The above command will start a container and map port 8080 on your host to port 80 in the container. You can access the application by navigating to http://localhost:8080 in your web browser.
 
-```sh
-npm run build
+## Upgradation
+
+Upgrading to the latest version of this project is easy. You just need to update the Docker image tag.
+
+To upgrade your current installation, you should follow these steps:
+
+1. Stop the running container
+
+```bash
+docker stop xbox-pic
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+2. Pull the latest version of the image
 
-```sh
-npm run lint
+```bash
+docker pull jiehui/xbox-pic:latest
+```
+
+3. Start the container using the latest image
+
+```bash
+docker run -p 8080:80 -it jiehui/xbox-pic:latest
+```
+
+By following these steps, you will have the latest version of the project up and running.
+
+## Contribution
+
+We welcome contributions! You can help by using our issue tracker to report bugs, suggest new features, and submit pull requests. Thank you for your support!
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+```
+
 ```
