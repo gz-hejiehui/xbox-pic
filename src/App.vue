@@ -110,7 +110,8 @@ export default {
     },
     methods: {
         validateSearch() {
-            return this.searchTerm.trim().length > 0;
+            const pattern = /^[A-Za-z0-9]{12}$/;
+            return pattern.test(this.searchTerm.trim());
         },
         showMesage(message) {
             if (message) {
@@ -122,7 +123,7 @@ export default {
             if (this.validateSearch()) {
                 try {
                     this.loading = true;
-                    await this.store.getData(this.searchTerm);
+                    await this.store.getData(this.searchTerm.trim());
                 } catch (e) {
                     this.showMesage(
                         "There was an error while searching, please try again later."
@@ -132,7 +133,9 @@ export default {
                     this.loading = false;
                 }
             } else {
-                this.showMesage("Search input is required.");
+                this.showMesage(
+                    "The value is not valid, it should be 12 characters long and contains letters or numbers"
+                );
             }
         },
     },
