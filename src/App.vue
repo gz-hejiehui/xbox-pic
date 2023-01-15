@@ -21,7 +21,7 @@
                             <b-input-group>
                                 <b-form-input
                                     type="search"
-                                    placeholder="Search Game"
+                                    placeholder="9PB06H76TGWL"
                                     aria-label="Search"
                                     v-model="searchTerm"
                                     @blur="validateSearch"
@@ -45,27 +45,21 @@
                 </b-container>
             </b-jumbotron>
 
-            <div class="album py-5 bg-light">
-                <div class="container">
-                    <div v-if="products">
-                        <b-tabs content-class="mt-3">
-                            <b-tab
-                                v-for="(product, index) in products"
-                                :title="product.id"
-                                :active="index === 0"
-                            >
-                                <div class="row">
-                                    <div
-                                        class="col-md-3"
-                                        v-for="screenshot in product.images
-                                            .screenshots"
-                                    >
-                                        <image-card :image="screenshot" />
-                                    </div>
+            <div class="album py-5 bg-light" style="min-height: 600px">
+                <div class="container" v-if="product.id">
+                    <b-tabs content-class="mt-3">
+                        <b-tab
+                            v-for="(images, purpose) in product.images"
+                            :title="purpose"
+                            :active="purpose === 'ScreenShot'"
+                        >
+                            <div class="row">
+                                <div class="col-md-3" v-for="image in images">
+                                    <image-card :image="image" />
                                 </div>
-                            </b-tab>
-                        </b-tabs>
-                    </div>
+                            </div>
+                        </b-tab>
+                    </b-tabs>
                 </div>
             </div>
         </main>
@@ -104,13 +98,17 @@ export default {
     },
     computed: {
         ...mapState(useProductStore, {
-            productCount: "count",
-            products: "products",
+            product: "product",
         }),
+        searchQuery() {
+            let urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get("search");
+        },
     },
     methods: {
         validateSearch() {
-            return this.searchTerm.trim().length > 0;
+            const pattern = /^[A-Za-z0-9]{12}$/;
+            return pattern.test(this.searchTerm.trim());
         },
         showMesage(message) {
             if (message) {
@@ -122,7 +120,7 @@ export default {
             if (this.validateSearch()) {
                 try {
                     this.loading = true;
-                    await this.store.getData(this.searchTerm);
+                    await this.store.getData(this.searchTerm.trim());
                 } catch (e) {
                     this.showMesage(
                         "There was an error while searching, please try again later."
@@ -132,9 +130,15 @@ export default {
                     this.loading = false;
                 }
             } else {
-                this.showMesage("Search input is required.");
+                this.showMesage(
+                    "The value is not valid, it should be 12 characters long and contains letters or numbers"
+                );
             }
         },
+    },
+    mounted() {
+        this.searchTerm = this.searchQuery ?? "9PB06H76TGWL";
+        this.searchGames();
     },
 };
 </script>
