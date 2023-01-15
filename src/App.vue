@@ -21,7 +21,7 @@
                             <b-input-group>
                                 <b-form-input
                                     type="search"
-                                    placeholder="Search Game"
+                                    placeholder="9PB06H76TGWL"
                                     aria-label="Search"
                                     v-model="searchTerm"
                                     @blur="validateSearch"
@@ -45,26 +45,21 @@
                 </b-container>
             </b-jumbotron>
 
-            <div class="album py-5 bg-light">
-                <div class="container">
-                    <div v-if="product.images">
-                        <b-tabs content-class="mt-3">
-                            <b-tab
-                                v-for="(images, purpose) in product.images"
-                                :title="purpose"
-                                :active="purpose === 'ScreenShot'"
-                            >
-                                <div class="row">
-                                    <div
-                                        class="col-md-3"
-                                        v-for="image in images"
-                                    >
-                                        <image-card :image="image" />
-                                    </div>
+            <div class="album py-5 bg-light" style="min-height: 600px">
+                <div class="container" v-if="product.id">
+                    <b-tabs content-class="mt-3">
+                        <b-tab
+                            v-for="(images, purpose) in product.images"
+                            :title="purpose"
+                            :active="purpose === 'ScreenShot'"
+                        >
+                            <div class="row">
+                                <div class="col-md-3" v-for="image in images">
+                                    <image-card :image="image" />
                                 </div>
-                            </b-tab>
-                        </b-tabs>
-                    </div>
+                            </div>
+                        </b-tab>
+                    </b-tabs>
                 </div>
             </div>
         </main>
@@ -105,6 +100,10 @@ export default {
         ...mapState(useProductStore, {
             product: "product",
         }),
+        searchQuery() {
+            let urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get("search");
+        },
     },
     methods: {
         validateSearch() {
@@ -136,6 +135,10 @@ export default {
                 );
             }
         },
+    },
+    mounted() {
+        this.searchTerm = this.searchQuery ?? "9PB06H76TGWL";
+        this.searchGames();
     },
 };
 </script>
