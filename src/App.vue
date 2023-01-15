@@ -47,20 +47,19 @@
 
             <div class="album py-5 bg-light">
                 <div class="container">
-                    <div v-if="products">
+                    <div v-if="product.images">
                         <b-tabs content-class="mt-3">
                             <b-tab
-                                v-for="(product, index) in products"
-                                :title="product.id"
-                                :active="index === 0"
+                                v-for="(images, purpose) in product.images"
+                                :title="purpose"
+                                :active="purpose === 'ScreenShot'"
                             >
                                 <div class="row">
                                     <div
                                         class="col-md-3"
-                                        v-for="screenshot in product.images
-                                            .screenshots"
+                                        v-for="image in images"
                                     >
-                                        <image-card :image="screenshot" />
+                                        <image-card :image="image" />
                                     </div>
                                 </div>
                             </b-tab>
@@ -104,8 +103,7 @@ export default {
     },
     computed: {
         ...mapState(useProductStore, {
-            productCount: "count",
-            products: "products",
+            product: "product",
         }),
     },
     methods: {

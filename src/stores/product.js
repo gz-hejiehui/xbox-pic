@@ -5,52 +5,54 @@ const apiUrl = "https://displaycatalog.mp.microsoft.com/v7.0/products";
 export const useProductStore = defineStore("product", {
     state: () => {
         return {
-            bigIds: "",
-            data: [],
+            bigId: "",
+            data: {},
         };
     },
     getters: {
-        products: (state) =>
-            state.data.map((item) => {
-                const info = item["LocalizedProperties"][0];
+        product: (state) => {
+            if (state.data["LocalizedProperties"]) {
+                const info = state.data["LocalizedProperties"][0];
+                const images = info["Images"].reduce((result, image) => {
+                    const purpose = image["ImagePurpose"];
+                    if (!result[purpose]) {
+                        result[purpose] = [];
+                    }
 
-                let imagesFilted = function (purpose) {
-                    return info["Images"]
-                        .filter((img) => img["ImagePurpose"] === purpose)
-                        .map((img) => {
-                            return {
-                                url: "https:" + img["Uri"],
-                                width: img["Width"],
-                                height: img["Height"],
-                                alt:
-                                    item["ProductId"] +
-                                    "_" +
-                                    img["ImagePurpose"] +
-                                    "_" +
-                                    img["FileId"],
-                            };
-                        });
-                };
+                    result[purpose].push({
+                        url: "https:" + image["Uri"],
+                        width: image["Width"],
+                        height: image["Height"],
+                        alt: image["FileId"],
+                        purpose: image["ImagePurpose"],
+                    });
+                    return result;
+                }, {});
 
                 return {
-                    id: item["ProductId"],
+                    id: state.data["ProductId"],
                     name: info["ProductTitle"],
                     developer: info["DeveloperName"],
                     publisher: info["PublisherName"],
-                    images: {
-                        poster: imagesFilted("Poster"),
-                        screenshots: imagesFilted("Screenshot"),
-                    },
+                    images: images,
                 };
-            }),
-        count: (state) => state.data.length,
+            } else {
+                return {
+                    id: "",
+                    name: "",
+                    developer: "",
+                    publisher: "",
+                    images: [],
+                };
+            }
+        },
     },
     actions: {
-        async getData(bigIds) {
-            this.bigIds = bigIds;
+        async getData(bigId) {
+            this.bigId = bigId.trim();
 
             const params = {
-                bigIds: this.bigIds.trim(),
+                bigIds: this.bigId,
                 market: "US",
                 languages: "en-US",
                 "MS-CV": "DGU1mcuYo0WMMp+F.1",
@@ -59,7 +61,7 @@ export const useProductStore = defineStore("product", {
             try {
                 const response = await axios.get(apiUrl, { params });
                 if (response.data.Products.length > 0) {
-                    this.data = response.data.Products;
+                    this.data = response.data.Products[0];
                 } else {
                     this.data = [];
                 }
